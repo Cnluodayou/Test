@@ -1,2 +1,718 @@
-# Test
-TEst
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作价值计算器</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+        
+        /* 容器样式 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 40px;
+        }
+        
+        .header h1 {
+            color: #1d1d1f;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            color: #86868b;
+            font-size: 17px;
+            font-weight: 400;
+        }
+        
+        /* 输入区域样式 */
+        .input-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 19px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e3e3e3;
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+        
+        .input-description {
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #1d1d1f;
+            transition: border-color 0.2s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+        
+        .input-field[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .input-field[type="number"]::-webkit-outer-spin-button,
+        .input-field[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .select-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #1d1d1f;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        
+        .select-field:focus {
+            outline: none;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+        
+        .error {
+            color: #ff3b30;
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 18px;
+        }
+        
+        /* 按钮区域样式 */
+        .button-section {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        
+        .btn-primary {
+            background-color: #0071e3;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0077ed;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            border: 1px solid #e3e3e3;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e3e3e3;
+            transform: translateY(-1px);
+        }
+        
+        /* 结果区域样式 */
+        .result-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e3e3e3;
+        }
+        
+        .result-score {
+            font-size: 56px;
+            font-weight: 700;
+            color: #0071e3;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        
+        .result-rating {
+            font-size: 22px;
+            font-weight: 500;
+            color: #ff9500;
+            margin-bottom: 24px;
+        }
+        
+        .result-subtitle {
+            font-size: 15px;
+            color: #86868b;
+        }
+        
+        .result-details {
+            margin-top: 32px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-item-label {
+            font-size: 15px;
+            color: #86868b;
+        }
+        
+        .result-item-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        
+        .result-item-value.highlight {
+            color: #0071e3;
+            font-size: 18px;
+        }
+        
+        .analysis {
+            margin-top: 32px;
+            padding: 24px;
+            background-color: #f5f5f7;
+            border-radius: 12px;
+        }
+        
+        .analysis h3 {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #1d1d1f;
+        }
+        
+        .analysis p {
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.6;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .header {
+                padding-top: 24px;
+                margin-bottom: 24px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 15px;
+            }
+            
+            .input-section {
+                padding: 24px;
+            }
+            
+            .button-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .result-score {
+                font-size: 40px;
+            }
+            
+            .result-rating {
+                font-size: 18px;
+            }
+            
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .result-item-value {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>工作价值计算器</h1>
+            <p>客观评估你的工作价值</p>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-section">
+            <h2 class="section-title">工作信息</h2>
+            
+            <!-- 年薪总包 -->
+            <div class="input-group">
+                <label class="input-label">年薪总包（元）</label>
+                <input type="number" class="input-field" id="annual-package" placeholder="请输入你的年薪总包">
+                <div class="error" id="annual-package-error"></div>
+            </div>
+            
+            <!-- 工作国家/地区 -->
+            <div class="input-group">
+                <label class="input-label">工作国家/地区</label>
+                <div class="input-description">PPP转换因子是将各国货币购买力标准化的指标。例如中国为4.19，表示1美元在美国的购买力等同于4.19元人民币在中国的购买力。</div>
+                <select class="select-field" id="country" onchange="updatePPP()">
+                    <option value="china">中国 (PPP: 4.19)</option>
+                    <option value="usa">美国 (PPP: 1.00)</option>
+                    <option value="japan">日本 (PPP: 1.42)</option>
+                    <option value="germany">德国 (PPP: 1.34)</option>
+                    <option value="uk">英国 (PPP: 1.28)</option>
+                    <option value="canada">加拿大 (PPP: 1.23)</option>
+                    <option value="australia">澳大利亚 (PPP: 1.37)</option>
+                </select>
+                <div class="error" id="country-error"></div>
+            </div>
+            
+            <!-- 每周工作天数 -->
+            <div class="input-group">
+                <label class="input-label">每周工作天数 (d/周)</label>
+                <input type="number" class="input-field" id="weekly-work-days" min="1" max="7" placeholder="请输入每周工作天数">
+                <div class="error" id="weekly-work-days-error"></div>
+            </div>
+            
+            <!-- WFH天数 -->
+            <div class="input-group">
+                <label class="input-label">WFH天数 (d/周)</label>
+                <div class="input-description">WFH指居家办公(Work From Home)，这里填写的是前面工作天数中有多少天是在家办公的。</div>
+                <input type="number" class="input-field" id="wfh-days" min="0" placeholder="请输入每周WFH天数">
+                <div class="error" id="wfh-days-error"></div>
+            </div>
+            
+            <!-- 年假天数 -->
+            <div class="input-group">
+                <label class="input-label">年假天数 (d)</label>
+                <input type="number" class="input-field" id="annual-leave" min="0" placeholder="请输入年假天数">
+                <div class="error" id="annual-leave-error"></div>
+            </div>
+            
+            <!-- 法定假日 -->
+            <div class="input-group">
+                <label class="input-label">法定假日 (d)</label>
+                <input type="number" class="input-field" id="public-holidays" min="0" placeholder="请输入法定假日天数">
+                <div class="error" id="public-holidays-error"></div>
+            </div>
+            
+            <!-- 带薪病假 -->
+            <div class="input-group">
+                <label class="input-label">带薪病假 (d)</label>
+                <input type="number" class="input-field" id="paid-sick-leave" min="0" placeholder="请输入带薪病假天数">
+                <div class="error" id="paid-sick-leave-error"></div>
+            </div>
+            
+            <!-- 总工时 -->
+            <div class="input-group">
+                <label class="input-label">总工时 (h)</label>
+                <div class="input-description">工时：是指"下班时间-上班时间"的总时间，包括吃饭、午休、加班等（不含通勤）。</div>
+                <input type="number" class="input-field" id="total-hours" min="0" placeholder="请输入每天总工时">
+                <div class="error" id="total-hours-error"></div>
+            </div>
+            
+            <!-- 通勤 -->
+            <div class="input-group">
+                <label class="input-label">通勤 (h)</label>
+                <div class="input-description">通勤时长是指上下班往返的总时间，即家到公司和公司回家的时间总和。</div>
+                <input type="number" step="0.1" class="input-field" id="commute-time" min="0" placeholder="请输入每天通勤时间">
+                <div class="error" id="commute-time-error"></div>
+            </div>
+            
+            <!-- 休息&摸鱼 -->
+            <div class="input-group">
+                <label class="input-label">休息&摸鱼 (h)</label>
+                <input type="number" step="0.1" class="input-field" id="rest-time" min="0" placeholder="请输入每天休息和摸鱼时间">
+                <div class="error" id="rest-time-error"></div>
+            </div>
+        </div>
+        
+        <!-- 按钮区域 -->
+        <div class="button-section">
+            <button class="btn btn-primary" onclick="calculateScore()">计算得分</button>
+            <button class="btn btn-secondary" onclick="resetInput()">重置输入</button>
+        </div>
+        
+        <!-- 结果区域 -->
+        <div class="result-section" id="result-section">
+            <div class="result-header">
+                <div class="result-score" id="final-score">0</div>
+                <div class="result-rating" id="rating">低</div>
+                <div class="result-subtitle">你的工作价值评分</div>
+            </div>
+            
+            <div class="result-details">
+                <div class="result-item">
+                    <span class="result-item-label">年薪总包</span>
+                    <span class="result-item-value" id="result-annual-package">0元</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-item-label">PPP调整后年薪</span>
+                    <span class="result-item-value highlight" id="result-ppp-adjusted">0元</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-item-label">时薪</span>
+                    <span class="result-item-value highlight" id="result-hourly-rate">0元/小时</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-item-label">年工作小时数</span>
+                    <span class="result-item-value" id="result-annual-hours">0小时</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-item-label">年通勤时间</span>
+                    <span class="result-item-value" id="result-annual-commute">0小时</span>
+                </div>
+            </div>
+            
+            <div class="analysis">
+                <h3>分析结果</h3>
+                <p id="analysis-text">请完成所有输入项并点击计算得分按钮查看分析结果。</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // PPP转换因子
+        const pppFactors = {
+            china: 4.19,
+            usa: 1.00,
+            japan: 1.42,
+            germany: 1.34,
+            uk: 1.28,
+            canada: 1.23,
+            australia: 1.37
+        };
+        
+        // 更新PPP显示
+        function updatePPP() {
+            const country = document.getElementById('country').value;
+            const ppp = pppFactors[country];
+            const countrySelect = document.getElementById('country');
+            
+            // 更新选项文本
+            for (let i = 0; i < countrySelect.options.length; i++) {
+                const option = countrySelect.options[i];
+                const countryCode = option.value;
+                const countryName = option.text.split(' (')[0];
+                option.text = `${countryName} (PPP: ${pppFactors[countryCode].toFixed(2)})`;
+            }
+        }
+        
+        // 计算得分函数
+        function calculateScore() {
+            // 清除所有错误提示
+            clearErrors();
+            
+            // 获取输入值
+            const annualPackage = parseFloat(document.getElementById('annual-package').value) || 0;
+            const country = document.getElementById('country').value;
+            const weeklyWorkDays = parseInt(document.getElementById('weekly-work-days').value) || 0;
+            const wfhDays = parseInt(document.getElementById('wfh-days').value) || 0;
+            const annualLeave = parseInt(document.getElementById('annual-leave').value) || 0;
+            const publicHolidays = parseInt(document.getElementById('public-holidays').value) || 0;
+            const paidSickLeave = parseInt(document.getElementById('paid-sick-leave').value) || 0;
+            const totalHours = parseFloat(document.getElementById('total-hours').value) || 0;
+            const commuteTime = parseFloat(document.getElementById('commute-time').value) || 0;
+            const restTime = parseFloat(document.getElementById('rest-time').value) || 0;
+            
+            // 验证输入
+            let isValid = true;
+            
+            if (annualPackage <= 0) {
+                document.getElementById('annual-package-error').textContent = '请输入有效的年薪总包';
+                isValid = false;
+            }
+            
+            if (weeklyWorkDays <= 0 || weeklyWorkDays > 7) {
+                document.getElementById('weekly-work-days-error').textContent = '请输入有效的每周工作天数';
+                isValid = false;
+            }
+            
+            if (wfhDays < 0 || wfhDays > weeklyWorkDays) {
+                document.getElementById('wfh-days-error').textContent = 'WFH天数不能超过每周工作天数';
+                isValid = false;
+            }
+            
+            if (totalHours <= 0) {
+                document.getElementById('total-hours-error').textContent = '请输入有效的每天总工时';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                return;
+            }
+            
+            // 计算
+            const ppp = pppFactors[country];
+            const pppAdjusted = annualPackage / ppp;
+            
+            // 计算年工作天数
+            const annualWorkDays = (52 * weeklyWorkDays) - annualLeave - publicHolidays - paidSickLeave;
+            const effectiveWorkDays = Math.max(0, annualWorkDays);
+            
+            // 计算年工作小时数
+            const annualWorkHours = effectiveWorkDays * totalHours;
+            
+            // 计算年通勤时间
+            const workFromOfficeDays = weeklyWorkDays - wfhDays;
+            const annualCommuteHours = (52 * workFromOfficeDays) * commuteTime;
+            
+            // 计算时薪
+            const hourlyRate = annualWorkHours > 0 ? annualPackage / annualWorkHours : 0;
+            const pppHourlyRate = annualWorkHours > 0 ? pppAdjusted / annualWorkHours : 0;
+            
+            // 计算工作价值得分
+            let score = 0;
+            
+            // 基于时薪计算基础得分
+            if (pppHourlyRate < 50) {
+                score = 30;
+            } else if (pppHourlyRate < 100) {
+                score = 45;
+            } else if (pppHourlyRate < 150) {
+                score = 60;
+            } else if (pppHourlyRate < 200) {
+                score = 75;
+            } else if (pppHourlyRate < 300) {
+                score = 85;
+            } else {
+                score = 95;
+            }
+            
+            // 工作时间调整
+            if (totalHours <= 6) {
+                score += 10;
+            } else if (totalHours <= 8) {
+                score += 5;
+            } else if (totalHours > 10) {
+                score -= 5;
+            } else if (totalHours > 12) {
+                score -= 15;
+            }
+            
+            // 通勤时间调整
+            if (commuteTime <= 0.5) {
+                score += 5;
+            } else if (commuteTime > 2) {
+                score -= 10;
+            } else if (commuteTime > 1) {
+                score -= 5;
+            }
+            
+            // WFH调整
+            if (wfhDays >= weeklyWorkDays) {
+                score += 10;
+            } else if (wfhDays > 0) {
+                score += 5;
+            }
+            
+            // 休息时间调整
+            if (restTime >= 2) {
+                score += 5;
+            }
+            
+            // 确保分数在合理范围内
+            score = Math.max(0, Math.min(100, score));
+            
+            // 确定评分等级
+            let rating;
+            if (score >= 90) {
+                rating = '极高';
+            } else if (score >= 80) {
+                rating = '高';
+            } else if (score >= 70) {
+                rating = '中高';
+            } else if (score >= 60) {
+                rating = '中等';
+            } else if (score >= 40) {
+                rating = '中低';
+            } else {
+                rating = '低';
+            }
+            
+            // 显示结果
+            document.getElementById('final-score').textContent = Math.round(score);
+            document.getElementById('rating').textContent = rating;
+            document.getElementById('result-annual-package').textContent = annualPackage.toLocaleString() + '元';
+            document.getElementById('result-ppp-adjusted').textContent = Math.round(pppAdjusted).toLocaleString() + '元';
+            document.getElementById('result-hourly-rate').textContent = hourlyRate.toFixed(2) + '元/小时';
+            document.getElementById('result-annual-hours').textContent = Math.round(annualWorkHours) + '小时';
+            document.getElementById('result-annual-commute').textContent = Math.round(annualCommuteHours) + '小时';
+            
+            // 生成分析文本
+            generateAnalysis(score, pppHourlyRate, totalHours, commuteTime, wfhDays, weeklyWorkDays);
+            
+            // 显示结果区域
+            document.getElementById('result-section').style.display = 'block';
+        }
+        
+        // 重置输入函数
+        function resetInput() {
+            // 清除所有输入值
+            const inputFields = document.querySelectorAll('.input-field');
+            inputFields.forEach(field => {
+                field.value = '';
+            });
+            
+            // 重置国家选择
+            document.getElementById('country').value = 'china';
+            updatePPP();
+            
+            // 清除所有错误提示
+            clearErrors();
+            
+            // 隐藏结果区域
+            document.getElementById('result-section').style.display = 'none';
+        }
+        
+        // 清除错误提示函数
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error');
+            errorElements.forEach(element => {
+                element.textContent = '';
+            });
+        }
+        
+        // 生成分析文本函数
+        function generateAnalysis(score, pppHourlyRate, totalHours, commuteTime, wfhDays, weeklyWorkDays) {
+            let analysisText = '';
+            
+            if (score >= 90) {
+                analysisText = '你的工作价值极高！时薪水平优秀，工作时间合理，通勤成本低，并且有良好的工作灵活性。';
+            } else if (score >= 80) {
+                analysisText = '你的工作价值很高。时薪水平良好，工作条件较为优越。';
+            } else if (score >= 70) {
+                analysisText = '你的工作价值处于中高水平。整体工作条件良好，但仍有提升空间。';
+            } else if (score >= 60) {
+                analysisText = '你的工作价值处于中等水平。建议关注时薪提升和工作条件的改善。';
+            } else if (score >= 40) {
+                analysisText = '你的工作价值处于中低水平。时薪较低，工作时间或通勤成本可能较高。';
+            } else {
+                analysisText = '你的工作价值较低。建议积极寻求薪资提升或考虑更换工作机会。';
+            }
+            
+            // 添加具体建议
+            if (pppHourlyRate < 100) {
+                analysisText += ' 建议关注薪资增长机会，提升个人技能以增加收入。';
+            }
+            
+            if (totalHours > 10) {
+                analysisText += ' 工作时间较长，建议合理安排工作与生活的平衡。';
+            }
+            
+            if (commuteTime > 1) {
+                analysisText += ' 通勤时间较长，考虑寻找更近的住所或增加WFH天数。';
+            }
+            
+            if (wfhDays === 0) {
+                analysisText += ' 可以尝试与雇主协商增加居家办公的天数，提高工作灵活性。';
+            }
+            
+            document.getElementById('analysis-text').textContent = analysisText;
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePPP();
+        });
+    </script>
+</body>
+</html>
